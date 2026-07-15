@@ -12,16 +12,16 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Set up JDK 17
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
           java-version: '17'
-          distribution: 'temurin'   # or 'adopt', 'zulu', etc.
+          distribution: 'temurin'
 
       - name: Cache Gradle packages
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: |
             ~/.gradle/caches
@@ -33,23 +33,20 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
-      # Run tests and generate JaCoCo report (does NOT enforce coverage verification)
       - name: Run tests and generate JaCoCo report
         run: ./gradlew test jacocoTestReport
 
-      # Upload JUnit test reports (XML and HTML)
       - name: Upload JUnit test reports
-        uses: actions/upload-artifact@v3
-        if: always()   # upload even if tests fail
+        uses: actions/upload-artifact@v4
+        if: always()
         with:
           name: junit-test-reports
           path: |
             build/test-results/test/*.xml
             build/reports/tests/test/
 
-      # Upload JaCoCo coverage report (HTML + XML)
       - name: Upload JaCoCo coverage report
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: always()
         with:
           name: jacoco-report
