@@ -1,0 +1,62 @@
+plugins {
+    id 'java'
+    id 'jacoco'
+}
+
+sourceSets {
+    main {
+        java {
+            srcDirs = ['src/main/java']           
+        }
+    }
+    test {
+        java {
+            srcDirs = ['src/test/java']      
+        }
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testImplementation 'junit:junit:4.13.2'
+    testImplementation 'pl.pragmatists:JUnitParams:1.1.1'
+}
+
+test {
+    useJUnit()
+    testLogging {
+        events "passed", "skipped", "failed"          
+        exceptionFormat "full"                        
+        showCauses true
+        showStackTraces true
+        showStandardStreams true                     
+    }
+    finalizedBy jacocoTestReport
+}
+
+jacocoTestReport {
+    dependsOn test
+    reports {
+        xml.required = true
+        csv.required = false
+        html.required = true
+        html.outputLocation = layout.buildDirectory.dir('jacocoHtml')
+    }
+}
+
+// Optional: Enforce minimum code coverage
+jacocoTestCoverageVerification {
+    violationRules {
+        rule {
+            limit {
+                minimum = 0.90 // 90% coverage minimum
+            }
+        }
+    }
+}
+
+// Make sure check runs coverage verification
+check.dependsOn jacocoTestCoverageVerification
