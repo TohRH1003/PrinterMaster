@@ -1,0 +1,58 @@
+name: Build and Test
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'   # or 'adopt', 'zulu', etc.
+
+      - name: Cache Gradle packages
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      # Run tests and generate JaCoCo report (does NOT enforce coverage verification)
+      - name: Run tests and generate JaCoCo report
+        run: ./gradlew test jacocoTestReport
+
+      # Upload JUnit test reports (XML and HTML)
+      - name: Upload JUnit test reports
+        uses: actions/upload-artifact@v3
+        if: always()   # upload even if tests fail
+        with:
+          name: junit-test-reports
+          path: |
+            build/test-results/test/*.xml
+            build/reports/tests/test/
+
+      # Upload JaCoCo coverage report (HTML + XML)
+      - name: Upload JaCoCo coverage report
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: jacoco-report
+          path: |
+            build/jacocoHtml/
+            build/reports/jacoco/test/xml/
