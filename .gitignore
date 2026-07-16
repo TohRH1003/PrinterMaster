@@ -6,3 +6,15 @@ build
 
 # Ignore Kotlin plugin data
 .kotlin
+
+# Eclipse project metadata, prevents redundancy and false conflicts between machines or env
+.project
+
+# Eclipse classpath config, prevents desync
+.classpath
+
+# Eclipse workspace settings, ignore to prevent sharing project preferences
+.settings/
+
+# Ignore Eclipse default compiled output
+bin/
